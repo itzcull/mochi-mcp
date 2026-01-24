@@ -1,10 +1,29 @@
 {
   "name": "mochi-mcp",
   "version": "1.0.0",
-  "description": "MCP server for Mochi Cards API",
+  "description": "MCP server for Mochi Cards API - manage flashcards, decks, and templates via Model Context Protocol",
   "module": "src/index.ts",
   "type": "module",
   "private": true,
+  "license": "MIT",
+  "author": "itzcull",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itzcull/mochi-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mochi",
+    "mochi-cards",
+    "flashcards",
+    "spaced-repetition",
+    "srs",
+    "ai"
+  ],
+  "bin": {
+    "mochi-mcp": "src/index.ts"
+  },
   "scripts": {
     "start": "bun src/index.ts",
     "dev": "bun --watch src/index.ts"
