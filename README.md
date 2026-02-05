@@ -76,7 +76,7 @@ bun run start
 
 ## Cloudflare Workers Deployment
 
-This server can be deployed as a Cloudflare Worker for remote MCP access via SSE.
+This server can be deployed as a Cloudflare Worker for remote MCP access using the standard Streamable HTTP transport.
 
 ### Setup
 
@@ -105,14 +105,17 @@ bun run dev:worker
 
 - `GET /` - Server information
 - `GET /health` - Health check
-- `GET /sse` - SSE endpoint for MCP connections
-- `POST /message` - Message endpoint for client-to-server communication
+- `/mcp` - MCP endpoint (Streamable HTTP transport)
 
 ### Connecting to the Worker
 
-When connecting to the deployed worker, use the SSE transport with:
-- SSE endpoint: `https://your-worker.your-subdomain.workers.dev/sse`
-- Message endpoint: `https://your-worker.your-subdomain.workers.dev/message`
+Connect using the standard MCP Streamable HTTP transport:
+
+```
+https://your-worker.your-subdomain.workers.dev/mcp
+```
+
+This uses Cloudflare's official `createMcpHandler` from the [`agents`](https://www.npmjs.com/package/agents) package, which implements the MCP Streamable HTTP transport specification.
 
 ### Limitations
 
