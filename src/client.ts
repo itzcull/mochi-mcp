@@ -219,15 +219,32 @@ export class MochiClient {
   }
 }
 
+// Client instance holder for runtime injection
 let clientInstance: MochiClient | null = null;
 
+/**
+ * Set the global MochiClient instance.
+ * This should be called once during server initialization with the API key from environment.
+ */
+export function setMochiClient(client: MochiClient): void {
+  clientInstance = client;
+}
+
+/**
+ * Get the global MochiClient instance.
+ * Throws if setMochiClient hasn't been called.
+ */
 export function getMochiClient(): MochiClient {
   if (!clientInstance) {
-    const apiKey = process.env.MOCHI_API_KEY;
-    if (!apiKey) {
-      throw new Error("MOCHI_API_KEY environment variable is required");
-    }
-    clientInstance = new MochiClient(apiKey);
+    throw new Error("MochiClient not initialized. Call setMochiClient() first.");
   }
   return clientInstance;
+}
+
+/**
+ * Create a new MochiClient from an API key.
+ * Use this factory function to create clients in different environments.
+ */
+export function createMochiClient(apiKey: string): MochiClient {
+  return new MochiClient(apiKey);
 }

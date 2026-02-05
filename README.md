@@ -74,6 +74,51 @@ bun run dev
 bun run start
 ```
 
+## Cloudflare Workers Deployment
+
+This server can be deployed as a Cloudflare Worker for remote MCP access via SSE.
+
+### Setup
+
+1. Install dependencies:
+   ```bash
+   bun install
+   ```
+
+2. Set your Mochi API key as a secret:
+   ```bash
+   npx wrangler secret put MOCHI_API_KEY
+   ```
+
+3. Deploy to Cloudflare:
+   ```bash
+   bun run deploy
+   ```
+
+### Local Development (Worker)
+
+```bash
+bun run dev:worker
+```
+
+### Endpoints
+
+- `GET /` - Server information
+- `GET /health` - Health check
+- `GET /sse` - SSE endpoint for MCP connections
+- `POST /message` - Message endpoint for client-to-server communication
+
+### Connecting to the Worker
+
+When connecting to the deployed worker, use the SSE transport with:
+- SSE endpoint: `https://your-worker.your-subdomain.workers.dev/sse`
+- Message endpoint: `https://your-worker.your-subdomain.workers.dev/message`
+
+### Limitations
+
+When running as a Cloudflare Worker:
+- The `add_attachment` tool's `file-path` parameter is not available. Use `base64-data` instead to upload attachments.
+
 ## License
 
 MIT

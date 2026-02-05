@@ -172,27 +172,53 @@ export function registerCardTools(server: McpServer): void {
   // ===========================================================================
   server.tool(
     "add_attachment",
-    "Upload a file attachment to a card. Reference it in card content as ![](@media/filename).",
+    "Upload a file attachment to a card. Provide either file-path (local/Bun only) or base64-data (Workers compatible). Reference it in card content as ![](@media/filename).",
     {
       "card-id": z.string().describe("Card ID to attach file to"),
-      "file-path": z.string().describe("Local file path to upload"),
-      filename: z.string().optional().describe("Filename to use in Mochi (defaults to original filename)"),
+      "file-path": z.string().optional().describe("Local file path to upload (not available in Cloudflare Workers)"),
+      "base64-data": z.string().optional().describe("Base64-encoded file data (use this for Cloudflare Workers)"),
+      "content-type": z.string().optional().describe("MIME type when using base64-data (e.g., 'image/png')"),
+      filename: z.string().describe("Filename to use in Mochi"),
     },
     async (params) => {
       try {
         const client = getMochiClient();
-        const filePath = params["file-path"];
-        const file = Bun.file(filePath);
+        let blob: Blob;
+        const filename = params.filename;
 
-        if (!(await file.exists())) {
+        if (params["base64-data"]) {
+          // Base64 data mode - Works in Cloudflare Workers
+          const binaryString = atob(params["base64-data"]);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          blob = new Blob([bytes], { type: params["content-type"] ?? "application/octet-stream" });
+        } else if (params["file-path"]) {
+          // File path mode - Only works with Bun runtime
+          if (typeof Bun === "undefined") {
+            return {
+              content: [{ type: "text", text: "Error: file-path is not supported in Cloudflare Workers. Use base64-data instead." }],
+              isError: true,
+            };
+          }
+          const filePath = params["file-path"];
+          const file = Bun.file(filePath);
+
+          if (!(await file.exists())) {
+            return {
+              content: [{ type: "text", text: `Error: File not found: ${filePath}` }],
+              isError: true,
+            };
+          }
+
+          blob = await file.arrayBuffer().then((ab) => new Blob([ab]));
+        } else {
           return {
-            content: [{ type: "text", text: `Error: File not found: ${filePath}` }],
+            content: [{ type: "text", text: "Error: Either file-path or base64-data must be provided" }],
             isError: true,
           };
         }
-
-        const blob = await file.arrayBuffer().then((ab) => new Blob([ab]));
-        const filename = params.filename ?? filePath.split("/").pop() ?? "attachment";
 
         const result = await client.addAttachment(params["card-id"], blob, filename);
         return {

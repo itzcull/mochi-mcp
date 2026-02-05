@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createMochiClient, setMochiClient } from "./client.ts";
 import { registerCardTools } from "./tools/cards.ts";
 import { registerDeckTools } from "./tools/decks.ts";
 import { registerTemplateTools } from "./tools/templates.ts";
@@ -20,6 +21,9 @@ if (!apiKey) {
   console.error("  MOCHI_API_KEY=your_api_key bun src/index.ts");
   process.exit(1);
 }
+
+// Initialize the Mochi client
+setMochiClient(createMochiClient(apiKey));
 
 // Create MCP server
 const server = new McpServer({
