@@ -19,21 +19,28 @@
     "flashcards",
     "spaced-repetition",
     "srs",
-    "ai"
+    "ai",
+    "cloudflare-workers"
   ],
   "bin": {
     "mochi-mcp": "src/index.ts"
   },
   "scripts": {
     "start": "bun src/index.ts",
-    "dev": "bun --watch src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "deploy": "wrangler deploy",
+    "dev:worker": "wrangler dev",
+    "tail": "wrangler tail"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "agents": "^0.3.10",
     "zod": "^3.24.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@cloudflare/workers-types": "^4.20241205.0",
+    "@types/bun": "latest",
+    "wrangler": "^3.99.0"
   },
   "peerDependencies": {
     "typescript": "^5"

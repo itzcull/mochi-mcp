@@ -1,0 +1,10 @@
+name = "mochi-mcp"
+main = "src/worker.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Non-sensitive configuration variables can go here
+
+# The MOCHI_API_KEY should be set as a secret using:
+# wrangler secret put MOCHI_API_KEY
