@@ -1,4 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>itzcull/renovate-config:typescript"]
+  "extends": [
+    "github>itzcull/renovate-config:automaintain"
+  ]
 }
