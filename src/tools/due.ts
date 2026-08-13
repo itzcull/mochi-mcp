@@ -6,12 +6,14 @@ export function registerDueTools(server: McpServer): void {
   // ===========================================================================
   // get_due_cards
   // ===========================================================================
-  server.tool(
+  server.registerTool(
     "get_due_cards",
-    "Get cards that are due for review on a specific date. Useful for spaced repetition study sessions.",
     {
-      date: z.string().optional().describe("ISO 8601 date to check (defaults to today)"),
-      "deck-id": z.string().optional().describe("Filter by specific deck ID"),
+      description: "Get cards that are due for review on a specific date. Useful for spaced repetition study sessions.",
+      inputSchema: z.object({
+        date: z.string().optional().describe("ISO 8601 date to check (defaults to today)"),
+        "deck-id": z.string().optional().describe("Filter by specific deck ID"),
+      }),
     },
     async (params) => {
       try {

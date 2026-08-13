@@ -48,11 +48,13 @@ export function registerTemplateTools(server: McpServer): void {
   // ===========================================================================
   // list_templates
   // ===========================================================================
-  server.tool(
+  server.registerTool(
     "list_templates",
-    "List all templates with pagination.",
     {
-      bookmark: z.string().optional().describe("Pagination cursor from previous request"),
+      description: "List all templates with pagination.",
+      inputSchema: z.object({
+        bookmark: z.string().optional().describe("Pagination cursor from previous request"),
+      }),
     },
     async (params) => {
       try {
@@ -76,11 +78,13 @@ export function registerTemplateTools(server: McpServer): void {
   // ===========================================================================
   // get_template
   // ===========================================================================
-  server.tool(
+  server.registerTool(
     "get_template",
-    "Retrieve a single template by its ID. Useful for examining template structure before creating cards.",
     {
-      id: z.string().describe("Template ID to retrieve"),
+      description: "Retrieve a single template by its ID. Useful for examining template structure before creating cards.",
+      inputSchema: z.object({
+        id: z.string().describe("Template ID to retrieve"),
+      }),
     },
     async ({ id }) => {
       try {
@@ -104,16 +108,18 @@ export function registerTemplateTools(server: McpServer): void {
   // ===========================================================================
   // create_template
   // ===========================================================================
-  server.tool(
+  server.registerTool(
     "create_template",
-    "Create a new template for cards. Use field placeholders like << Field name >> in content.",
     {
-      name: z.string().min(1).max(64).describe("Template name (1-64 characters)"),
-      content: z.string().describe("Markdown content with field placeholders like << Field name >>"),
-      pos: z.string().optional().describe("Relative position for sorting"),
-      fields: TemplateFieldsSchema.describe("Map of field IDs to field definitions"),
-      style: TemplateStyleSchema.optional().describe("Styling options"),
-      options: TemplateOptionsSchema.optional().describe("Template-level options"),
+      description: "Create a new template for cards. Use field placeholders like << Field name >> in content.",
+      inputSchema: z.object({
+        name: z.string().min(1).max(64).describe("Template name (1-64 characters)"),
+        content: z.string().describe("Markdown content with field placeholders like << Field name >>"),
+        pos: z.string().optional().describe("Relative position for sorting"),
+        fields: TemplateFieldsSchema.describe("Map of field IDs to field definitions"),
+        style: TemplateStyleSchema.optional().describe("Styling options"),
+        options: TemplateOptionsSchema.optional().describe("Template-level options"),
+      }),
     },
     async (params) => {
       try {

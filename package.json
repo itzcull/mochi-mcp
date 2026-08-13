@@ -29,13 +29,14 @@
     "dev": "bun --watch src/index.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "typescript": "^7.0.0"
   },
   "peerDependencies": {
-    "typescript": "^5 || ^6.0.0"
+    "typescript": "^5 || ^6.0.0 || ^7.0.0"
   }
 }
