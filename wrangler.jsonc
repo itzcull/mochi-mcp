@@ -1,0 +1,6 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mochi-mcp",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-08-01"
+}

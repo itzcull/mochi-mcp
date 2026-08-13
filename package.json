@@ -4,13 +4,8 @@
   "description": "MCP server for Mochi Cards API - manage flashcards, decks, and templates via Model Context Protocol",
   "module": "src/index.ts",
   "type": "module",
-  "private": true,
   "license": "MIT",
-  "author": "itzcull",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/itzcull/mochi-mcp.git"
-  },
+  "private": true,
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -24,9 +19,16 @@
   "bin": {
     "mochi-mcp": "src/index.ts"
   },
+  "engines": {
+    "bun": ">=1.0.0"
+  },
   "scripts": {
     "start": "bun src/index.ts",
-    "dev": "bun --watch src/index.ts"
+    "dev": "bun --watch src/index.ts",
+    "test": "bun test",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
@@ -34,9 +36,7 @@
   },
   "devDependencies": {
     "@types/bun": "^1.3.14",
-    "typescript": "^7.0.0"
-  },
-  "peerDependencies": {
-    "typescript": "^5 || ^6.0.0 || ^7.0.0"
+    "typescript": "^7.0.0",
+    "wrangler": "^4.0.0"
   }
 }

@@ -1,13 +1,13 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { getMochiClient, MochiApiError } from "../client.ts";
+import { MochiApiError, type MochiClient } from "../client.ts";
 
 const CardFieldValueSchema = z.object({
   id: z.string().describe("Field ID (should match the key)"),
   value: z.string().describe("Field value"),
 });
 
-export function registerCardTools(server: McpServer): void {
+export function registerCardTools(server: McpServer, client: MochiClient): void {
   // ===========================================================================
   // list_cards
   // ===========================================================================
@@ -23,7 +23,6 @@ export function registerCardTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.listCards(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -53,7 +52,6 @@ export function registerCardTools(server: McpServer): void {
     },
     async ({ id }) => {
       try {
-        const client = getMochiClient();
         const result = await client.getCard(id);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -90,7 +88,6 @@ export function registerCardTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.createCard(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -129,7 +126,6 @@ export function registerCardTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const { id, ...data } = params;
         const result = await client.updateCard(id, data);
         return {
@@ -160,7 +156,6 @@ export function registerCardTools(server: McpServer): void {
     },
     async ({ id }) => {
       try {
-        const client = getMochiClient();
         await client.deleteCard(id);
         return {
           content: [{ type: "text", text: `Card ${id} deleted successfully.` }],
@@ -186,25 +181,16 @@ export function registerCardTools(server: McpServer): void {
       description: "Upload a file attachment to a card. Reference it in card content as ![](@media/filename).",
       inputSchema: z.object({
         "card-id": z.string().describe("Card ID to attach file to"),
-        "file-path": z.string().describe("Local file path to upload"),
-        filename: z.string().optional().describe("Filename to use in Mochi (defaults to original filename)"),
+        filename: z.string().min(1).describe("Filename to use in Mochi"),
+        content: z.base64().describe("Base64-encoded file content"),
+        "media-type": z.string().optional().describe("File media type, such as image/png"),
       }),
     },
     async (params) => {
       try {
-        const client = getMochiClient();
-        const filePath = params["file-path"];
-        const file = Bun.file(filePath);
-
-        if (!(await file.exists())) {
-          return {
-            content: [{ type: "text", text: `Error: File not found: ${filePath}` }],
-            isError: true,
-          };
-        }
-
-        const blob = await file.arrayBuffer().then((ab) => new Blob([ab]));
-        const filename = params.filename ?? filePath.split("/").pop() ?? "attachment";
+        const bytes = Uint8Array.from(atob(params.content), (character) => character.charCodeAt(0));
+        const blob = new Blob([bytes], { type: params["media-type"] });
+        const filename = params.filename;
 
         const result = await client.addAttachment(params["card-id"], blob, filename);
         return {
@@ -241,7 +227,6 @@ export function registerCardTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         await client.deleteAttachment(params["card-id"], params.filename);
         return {
           content: [{ type: "text", text: `Attachment ${params.filename} deleted from card ${params["card-id"]}.` }],

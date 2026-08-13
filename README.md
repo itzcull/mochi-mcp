@@ -1,52 +1,72 @@
-# mochi-mcp
+# Mochi MCP Server
 
-MCP server for the [Mochi Cards](https://mochi.cards) API. Enables AI assistants to manage flashcards, decks, and templates through the Model Context Protocol.
+An MCP server for the [Mochi Cards](https://mochi.cards) API. It lets MCP clients manage cards, decks, templates, attachments, and due cards.
 
-## Features
+The server separates MCP tools from deployment adapters:
+
+- `src/server.ts` creates a runtime-neutral MCP server.
+- `src/index.ts` connects the server to local stdio transport.
+- `src/http.ts` exposes an authenticated Streamable HTTP handler based on Web APIs.
+- `src/worker.ts` connects Cloudflare Workers bindings to the HTTP handler.
+
+The Streamable HTTP handler can run on any host that supports standard `Request`, `Response`, `fetch`, `Blob`, and stream APIs.
+
+## Tools
 
 ### Cards
-- `list_cards` - List cards with optional filtering by deck
-- `get_card` - Retrieve a single card by ID
-- `create_card` - Create a new flashcard
-- `update_card` - Update an existing card
-- `delete_card` - Permanently delete a card
-- `add_attachment` - Upload file attachments to cards
-- `delete_attachment` - Remove attachments from cards
+
+- `list_cards` lists cards and can filter by deck.
+- `get_card` retrieves a card.
+- `create_card` creates a card.
+- `update_card` updates a card.
+- `delete_card` permanently deletes a card.
+- `add_attachment` uploads base64-encoded content to a card.
+- `delete_attachment` removes an attachment from a card.
 
 ### Decks
-- `list_decks` - List all decks
-- `get_deck` - Retrieve a single deck by ID
-- `create_deck` - Create a new deck
-- `update_deck` - Update deck properties
-- `delete_deck` - Permanently delete a deck
+
+- `list_decks` lists decks.
+- `get_deck` retrieves a deck.
+- `create_deck` creates a deck.
+- `update_deck` updates a deck.
+- `delete_deck` permanently deletes a deck.
 
 ### Templates
-- `list_templates` - List all templates
-- `get_template` - Retrieve a template by ID
-- `create_template` - Create a new card template
+
+- `list_templates` lists templates.
+- `get_template` retrieves a template.
+- `create_template` creates a template.
 
 ### Due Cards
-- `get_due_cards` - Get cards due for review (spaced repetition)
 
-## Installation
-
-```bash
-bun install
-```
+- `get_due_cards` lists cards that are due for review.
 
 ## Configuration
 
-This server requires a Mochi API key. To get your API key:
+Every deployment needs a Mochi API key from the Mochi Cards account settings.
 
-1. Open the Mochi Cards app
-2. Go to **Account Settings**
-3. Copy your API key
+| Setting | Purpose |
+| --- | --- |
+| `MOCHI_API_KEY` | Authenticates requests to the Mochi API. |
+| `MCP_AUTH_TOKEN` | Protects the remote Streamable HTTP endpoint. It is not used by stdio. |
 
-Set the `MOCHI_API_KEY` environment variable when running the server.
+One deployment uses one Mochi account. Keep both values secret.
 
-## Usage with Claude Desktop
+## Local Stdio
 
-Add this to your `claude_desktop_config.json`:
+Install dependencies:
+
+```sh
+bun install
+```
+
+Start the stdio server:
+
+```sh
+MOCHI_API_KEY=<mochi-api-key> bun run start
+```
+
+Configure an MCP client to run the repository entry point:
 
 ```json
 {
@@ -55,23 +75,75 @@ Add this to your `claude_desktop_config.json`:
       "command": "bun",
       "args": ["run", "/path/to/mochi-mcp/src/index.ts"],
       "env": {
-        "MOCHI_API_KEY": "your-api-key-here"
+        "MOCHI_API_KEY": "<mochi-api-key>"
       }
     }
   }
 }
 ```
 
-Replace `/path/to/mochi-mcp` with the actual path to this repository.
+## Streamable HTTP
+
+`createMochiHttpHandler` in `src/http.ts` accepts the Mochi API key and a deployment bearer token. It returns a standard asynchronous request handler:
+
+```ts
+const handleMcpRequest = createMochiHttpHandler({
+  mochiApiKey: environment.MOCHI_API_KEY,
+  authToken: environment.MCP_AUTH_TOKEN,
+});
+
+const response = await handleMcpRequest(request);
+```
+
+Mount this handler at an endpoint such as `/mcp`. MCP clients must send this header:
+
+```http
+Authorization: Bearer <mcp-auth-token>
+```
+
+The handler uses stateless Streamable HTTP. It creates a new MCP server for each request. The deployment does not need shared session storage.
+
+## Cloudflare Workers
+
+The included `src/worker.ts` adapter exposes `/mcp`. The included `wrangler.jsonc` contains no account, route, or domain values.
+
+Set deployment secrets:
+
+```sh
+bunx wrangler secret put MOCHI_API_KEY
+bunx wrangler secret put MCP_AUTH_TOKEN
+```
+
+Run the Worker locally by defining both values in `.dev.vars`, then start Wrangler:
+
+```sh
+bun run worker:dev
+```
+
+Deploy it:
+
+```sh
+bun run worker:deploy
+```
+
+The MCP endpoint is `https://<deployment-host>/mcp`. Configure the client to send `MCP_AUTH_TOKEN` as its bearer token.
+
+## Attachments
+
+Remote deployments cannot read files from an MCP client's local file system. The `add_attachment` tool therefore accepts:
+
+- `card-id`: target card ID.
+- `filename`: attachment filename.
+- `content`: base64-encoded file content.
+- `media-type`: optional media type such as `image/png`.
+
+Base64 increases request size by about one third. The deployment host and MCP client can impose lower request limits than the Mochi API.
 
 ## Development
 
-```bash
-# Run with hot reload
-bun run dev
-
-# Run once
-bun run start
+```sh
+bun run test
+bun run typecheck
 ```
 
 ## License

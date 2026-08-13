@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { getMochiClient, MochiApiError } from "../client.ts";
+import { MochiApiError, type MochiClient } from "../client.ts";
 
 const SortBySchema = z.enum([
   "none",
@@ -14,7 +14,7 @@ const SortBySchema = z.enum([
 
 const CardsViewSchema = z.enum(["list", "grid", "note", "column"]);
 
-export function registerDeckTools(server: McpServer): void {
+export function registerDeckTools(server: McpServer, client: MochiClient): void {
   // ===========================================================================
   // list_decks
   // ===========================================================================
@@ -28,7 +28,6 @@ export function registerDeckTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.listDecks(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -58,7 +57,6 @@ export function registerDeckTools(server: McpServer): void {
     },
     async ({ id }) => {
       try {
-        const client = getMochiClient();
         const result = await client.getDeck(id);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -97,7 +95,6 @@ export function registerDeckTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.createDeck(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -137,7 +134,6 @@ export function registerDeckTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const { id, ...data } = params;
         const result = await client.updateDeck(id, data);
         return {
@@ -168,7 +164,6 @@ export function registerDeckTools(server: McpServer): void {
     },
     async ({ id }) => {
       try {
-        const client = getMochiClient();
         await client.deleteDeck(id);
         return {
           content: [{ type: "text", text: `Deck ${id} deleted successfully.` }],

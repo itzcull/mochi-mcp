@@ -16,7 +16,7 @@ export class MochiClient {
 
   constructor(apiKey: string) {
     // Basic auth with API key as username, empty password
-    const encoded = Buffer.from(`${apiKey}:`).toString("base64");
+    const encoded = btoa(`${apiKey}:`);
     this.authHeader = `Basic ${encoded}`;
   }
 
@@ -217,17 +217,4 @@ export class MochiClient {
     const basePath = params?.["deck-id"] ? `/due/${params["deck-id"]}` : "/due";
     return this.get(`${basePath}${query ? `?${query}` : ""}`);
   }
-}
-
-let clientInstance: MochiClient | null = null;
-
-export function getMochiClient(): MochiClient {
-  if (!clientInstance) {
-    const apiKey = process.env.MOCHI_API_KEY;
-    if (!apiKey) {
-      throw new Error("MOCHI_API_KEY environment variable is required");
-    }
-    clientInstance = new MochiClient(apiKey);
-  }
-  return clientInstance;
 }
