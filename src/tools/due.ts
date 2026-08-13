@@ -1,8 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { getMochiClient, MochiApiError } from "../client.ts";
+import { MochiApiError, type MochiClient } from "../client.ts";
 
-export function registerDueTools(server: McpServer): void {
+export function registerDueTools(server: McpServer, client: MochiClient): void {
   // ===========================================================================
   // get_due_cards
   // ===========================================================================
@@ -17,7 +17,6 @@ export function registerDueTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.getDueCards(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],

@@ -1,10 +1,6 @@
 #!/usr/bin/env bun
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { registerCardTools } from "./tools/cards.ts";
-import { registerDeckTools } from "./tools/decks.ts";
-import { registerTemplateTools } from "./tools/templates.ts";
-import { registerDueTools } from "./tools/due.ts";
+import { createMochiServer } from "./server.ts";
 
 // Validate API key is present
 const apiKey = process.env.MOCHI_API_KEY;
@@ -21,17 +17,7 @@ if (!apiKey) {
   process.exit(1);
 }
 
-// Create MCP server
-const server = new McpServer({
-  name: "mochi-mcp",
-  version: "1.0.0",
-});
-
-// Register all tools
-registerCardTools(server);
-registerDeckTools(server);
-registerTemplateTools(server);
-registerDueTools(server);
+const server = createMochiServer(apiKey);
 
 // Connect via stdio transport
 const transport = new StdioServerTransport();

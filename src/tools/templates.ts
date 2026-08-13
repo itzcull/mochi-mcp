@@ -1,6 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { getMochiClient, MochiApiError } from "../client.ts";
+import { MochiApiError, type MochiClient } from "../client.ts";
 
 const TemplateFieldTypeSchema = z.enum([
   "text",
@@ -44,7 +44,7 @@ const TemplateOptionsSchema = z.object({
   "show-sides-separately?": z.boolean().optional().describe("Show template sides separately during review"),
 });
 
-export function registerTemplateTools(server: McpServer): void {
+export function registerTemplateTools(server: McpServer, client: MochiClient): void {
   // ===========================================================================
   // list_templates
   // ===========================================================================
@@ -58,7 +58,6 @@ export function registerTemplateTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.listTemplates(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -88,7 +87,6 @@ export function registerTemplateTools(server: McpServer): void {
     },
     async ({ id }) => {
       try {
-        const client = getMochiClient();
         const result = await client.getTemplate(id);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
@@ -123,7 +121,6 @@ export function registerTemplateTools(server: McpServer): void {
     },
     async (params) => {
       try {
-        const client = getMochiClient();
         const result = await client.createTemplate(params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],

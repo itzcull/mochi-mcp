@@ -94,8 +94,9 @@ export const DeleteCardInputSchema = z.object({
 
 export const AddAttachmentInputSchema = z.object({
   "card-id": z.string().describe("Card ID to attach file to"),
-  "file-path": z.string().describe("Local file path to upload"),
-  filename: z.string().optional().describe("Filename to use in Mochi (defaults to original filename)"),
+  filename: z.string().min(1).describe("Filename to use in Mochi"),
+  content: z.base64().describe("Base64-encoded file content"),
+  "media-type": z.string().optional().describe("File media type, such as image/png"),
 });
 
 export const DeleteAttachmentInputSchema = z.object({
