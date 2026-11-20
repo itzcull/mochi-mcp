@@ -1,10 +1,9 @@
 {
-  "name": "mochi-mcp",
+  "name": "@itzcull/mochi-mcp",
   "version": "1.0.0",
   "description": "MCP server for Mochi Cards API - manage flashcards, decks, and templates via Model Context Protocol",
   "module": "src/index.ts",
   "type": "module",
-  "private": true,
   "license": "MIT",
   "author": "itzcull",
   "repository": {
@@ -21,6 +20,9 @@
     "srs",
     "ai"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "mochi-mcp": "src/index.ts"
   },
