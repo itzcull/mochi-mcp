@@ -5,6 +5,12 @@ on:
     tags:
       - "v*"
 
+# One publish at a time. Every other tag run waits instead of being cancelled.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+  queue: max
+
 permissions:
   contents: read
 
@@ -54,13 +60,17 @@ jobs:
 
       # Skipping an existing version lets a failed run be re-run, and lets a
       # version published by hand still get its GitHub release.
+      # npm tries trusted publishing (OIDC) first and falls back to this token.
+      # Token publishes get provenance only with --provenance.
       - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           spec="$PACKAGE_NAME@$PACKAGE_VERSION"
           if npm view "$spec" version > /dev/null 2>&1; then
             echo "$spec is already on npm; skipping publish"
           else
-            npm publish
+            npm publish --provenance
           fi
 
       - name: Create GitHub release
