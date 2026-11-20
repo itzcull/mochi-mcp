@@ -3,6 +3,7 @@ import { basename } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { getMochiClient, MochiApiError } from "../client.ts";
+import { toMochiApiInput } from "./mochi-input.ts";
 
 const CardFieldValueSchema = z.object({
   id: z.string().describe("Field ID (should match the key)"),
@@ -83,8 +84,8 @@ export function registerCardTools(server: McpServer): void {
         content: z.string().describe("Markdown content of the card"),
         "deck-id": z.string().describe("ID of the deck this card belongs to"),
         "template-id": z.string().optional().describe("ID of the template to use"),
-        "archived?": z.boolean().optional().describe("Whether the card is archived"),
-        "review-reverse?": z.boolean().optional().describe("Review in reverse order (bottom to top)"),
+        archived: z.boolean().optional().describe("Whether the card is archived"),
+        "review-reverse": z.boolean().optional().describe("Review in reverse order (bottom to top)"),
         pos: z.string().optional().describe("Relative position within deck (lexicographic sorting)"),
         "manual-tags": z.array(z.string()).optional().describe("Tags without the # prefix"),
         fields: z.record(z.string(), CardFieldValueSchema).optional().describe("Map of field IDs to field values"),
@@ -93,7 +94,7 @@ export function registerCardTools(server: McpServer): void {
     async (params) => {
       try {
         const client = getMochiClient();
-        const result = await client.createCard(params);
+        const result = await client.createCard(toMochiApiInput(params));
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -121,9 +122,9 @@ export function registerCardTools(server: McpServer): void {
         content: z.string().optional().describe("Markdown content of the card"),
         "deck-id": z.string().optional().describe("ID of the deck this card belongs to"),
         "template-id": z.string().optional().describe("ID of the template to use"),
-        "archived?": z.boolean().optional().describe("Whether the card is archived"),
-        "trashed?": z.string().optional().describe("ISO 8601 timestamp if trashed, or omit to untrash"),
-        "review-reverse?": z.boolean().optional().describe("Review in reverse order"),
+        archived: z.boolean().optional().describe("Whether the card is archived"),
+        trashed: z.string().optional().describe("ISO 8601 timestamp if trashed, or omit to untrash"),
+        "review-reverse": z.boolean().optional().describe("Review in reverse order"),
         pos: z.string().optional().describe("Relative position within deck"),
         "manual-tags": z.array(z.string()).optional().describe("Tags without the # prefix (overwrites existing)"),
         fields: z.record(z.string(), CardFieldValueSchema).optional().describe("Map of field IDs to field values"),
@@ -133,7 +134,7 @@ export function registerCardTools(server: McpServer): void {
       try {
         const client = getMochiClient();
         const { id, ...data } = params;
-        const result = await client.updateCard(id, data);
+        const result = await client.updateCard(id, toMochiApiInput(data));
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -155,7 +156,7 @@ export function registerCardTools(server: McpServer): void {
   server.registerTool(
     "delete_card",
     {
-      description: "Permanently delete a card. WARNING: This cannot be undone. Use update_card with trashed? for soft delete.",
+      description: "Permanently delete a card. WARNING: This cannot be undone. Use update_card with trashed for soft delete.",
       inputSchema: z.object({
         id: z.string().describe("Card ID to delete"),
       }),
