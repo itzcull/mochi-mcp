@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
     "lib": ["ESNext"],
-    "types": ["bun"],
+    "types": ["node"],
     "target": "ESNext",
-    "module": "Preserve",
-    "moduleDetection": "force",
-    "jsx": "react-jsx",
-    "allowJs": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "src",
+    "outDir": "dist",
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "resolveJsonModule": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
@@ -19,5 +19,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src"]
 }

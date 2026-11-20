@@ -27,22 +27,19 @@ jobs:
         with:
           persist-credentials: false
 
-      # oven-sh/setup-bun v2.2.0
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
-        with:
-          no-cache: true
-
       # actions/setup-node v7.1.0
-      # Trusted publishing needs npm >= 11.5.1, which Node 24 provides.
+      # Reads devEngines.runtime from package.json. Trusted publishing needs
+      # npm >= 11.5.1, which Node 26 provides.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
-          node-version: "24"
+          node-version-file: package.json
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
-      - run: bun install --frozen-lockfile
+      - run: npm ci
 
-      - run: bunx tsc --noEmit
+      # Build explicitly: prepack does not run when ignore-scripts is set.
+      - run: npm run build
 
       - name: Read package
         run: |

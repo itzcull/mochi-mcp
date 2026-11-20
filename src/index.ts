@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { registerCardTools } from "./tools/cards.ts";
@@ -18,7 +18,7 @@ if (!apiKey) {
   console.error("  3. Find your API key");
   console.error("");
   console.error("Then run with:");
-  console.error("  MOCHI_API_KEY=your_api_key bun src/index.ts");
+  console.error("  MOCHI_API_KEY=your_api_key npx @itzcull/mochi-mcp");
   process.exit(1);
 }
 
