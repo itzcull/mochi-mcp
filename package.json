@@ -1,6 +1,6 @@
 {
   "name": "@itzcull/mochi-mcp",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MCP server for Mochi Cards API - manage flashcards, decks, and templates via Model Context Protocol",
   "module": "src/index.ts",
   "type": "module",
