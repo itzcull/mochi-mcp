@@ -131,23 +131,23 @@ Add this to your `claude_desktop_config.json`:
 
 ## Development
 
-This project uses Node.js 26 and npm, as set in `devEngines` in `package.json`. Node runs the TypeScript source directly, so development needs no build step.
+This project uses Node.js 26 and pnpm 12, as set in `devEngines` in `package.json`. Node runs the TypeScript source directly, so development needs no build step.
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Run with restart on file changes
-MOCHI_API_KEY=your-api-key-here npm run dev
+MOCHI_API_KEY=your-api-key-here pnpm run dev
 
 # Run once
-MOCHI_API_KEY=your-api-key-here npm start
+MOCHI_API_KEY=your-api-key-here pnpm start
 
 # Type-check
-npm run typecheck
+pnpm run typecheck
 
 # Compile to dist/, which is what the npm package ships
-npm run build
+pnpm run build
 ```
 
 ## License

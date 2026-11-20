@@ -1,14 +1,14 @@
-This project uses Node.js and npm. Do not use Bun.
+This project uses Node.js and pnpm. Do not use npm or Bun.
 
-`package.json` is the source of truth for tool versions: `devEngines` sets Node and npm for development and CI, and `engines` sets the minimum Node version for users.
+`package.json` is the source of truth for tool versions: `devEngines` sets Node and pnpm for development and CI, and `engines` sets the minimum Node version for users. `pnpm-lock.yaml` records the exact pnpm version.
 
 ## Commands
 
-- `npm install` installs dependencies. Commit `package-lock.json`.
-- `npm run dev` runs the server from source and restarts on file changes.
-- `npm start` runs the server from source once.
-- `npm run typecheck` type-checks without output.
-- `npm run build` compiles `src/` to `dist/`. The npm package ships only `dist/`.
+- `pnpm install` installs dependencies. Commit `pnpm-lock.yaml`.
+- `pnpm run dev` runs the server from source and restarts on file changes.
+- `pnpm start` runs the server from source once.
+- `pnpm run typecheck` type-checks without output.
+- `pnpm run build` compiles `src/` to `dist/`. The npm package ships only `dist/`.
 
 The server needs `MOCHI_API_KEY` in the environment.
 
@@ -20,4 +20,4 @@ The server needs `MOCHI_API_KEY` in the environment.
 
 ## Releases
 
-Releases are published by `.github/workflows/publish.yml` when a `v*` tag is pushed. Use `npm version <version>` to create the release commit and tag.
+Releases are published by `.github/workflows/publish.yml` when a `v*` tag is pushed. Use `pnpm version <version>` to create the release commit and tag.
