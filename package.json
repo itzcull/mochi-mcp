@@ -23,6 +23,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "src"
+  ],
   "bin": {
     "mochi-mcp": "src/index.ts"
   },

@@ -5,6 +5,7 @@ import { registerCardTools } from "./tools/cards.ts";
 import { registerDeckTools } from "./tools/decks.ts";
 import { registerTemplateTools } from "./tools/templates.ts";
 import { registerDueTools } from "./tools/due.ts";
+import packageJson from "../package.json" with { type: "json" };
 
 // Validate API key is present
 const apiKey = process.env.MOCHI_API_KEY;
@@ -24,7 +25,7 @@ if (!apiKey) {
 // Create MCP server
 const server = new McpServer({
   name: "mochi-mcp",
-  version: "1.0.0",
+  version: packageJson.version,
 });
 
 // Register all tools
