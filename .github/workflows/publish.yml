@@ -28,18 +28,23 @@ jobs:
           persist-credentials: false
 
       # actions/setup-node v7.1.0
-      # Reads devEngines.runtime from package.json. Trusted publishing needs
-      # npm >= 11.5.1, which Node 26 provides.
+      # Reads devEngines.runtime from package.json. registry-url writes the
+      # .npmrc that pnpm reads NODE_AUTH_TOKEN from.
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
         with:
           node-version-file: package.json
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
-      - run: npm ci
+      # pnpm/action-setup v6.1.1
+      # Reads devEngines.packageManager from package.json. pnpm then runs the
+      # version recorded in pnpm-lock.yaml.
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115
+
+      - run: pnpm install --frozen-lockfile
 
       # Build explicitly: prepack does not run when ignore-scripts is set.
-      - run: npm run build
+      - run: pnpm run build
 
       - name: Read package
         run: |
@@ -57,17 +62,19 @@ jobs:
 
       # Skipping an existing version lets a failed run be re-run, and lets a
       # version published by hand still get its GitHub release.
-      # npm tries trusted publishing (OIDC) first and falls back to this token.
-      # Token publishes get provenance only with --provenance.
+      # pnpm supports trusted publishing (OIDC). NODE_AUTH_TOKEN is the token
+      # for publishes without it. --provenance asks for provenance in both cases.
+      # --no-git-checks: the job runs on a tag checkout, and the tag check above
+      # already decides what gets published.
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           spec="$PACKAGE_NAME@$PACKAGE_VERSION"
-          if npm view "$spec" version > /dev/null 2>&1; then
+          if pnpm view "$spec" version > /dev/null 2>&1; then
             echo "$spec is already on npm; skipping publish"
           else
-            npm publish --provenance
+            pnpm publish --provenance --no-git-checks
           fi
 
       - name: Create GitHub release

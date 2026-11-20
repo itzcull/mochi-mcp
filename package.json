@@ -37,13 +37,14 @@
       "version": "^26"
     },
     "packageManager": {
-      "name": "npm"
+      "name": "pnpm",
+      "version": "^12"
     }
   },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "prepack": "npm run build",
+    "prepack": "pnpm run build",
     "start": "node src/index.ts",
     "dev": "node --watch src/index.ts"
   },
