@@ -4,31 +4,98 @@ MCP server for the [Mochi Cards](https://mochi.cards) API. Enables AI assistants
 
 See the [official Mochi API reference](https://mochi.cards/docs/api/).
 
-## Features
+## API operations
+
+The operations below follow the [official Mochi API reference](https://mochi.cards/docs/api/). An operation heading ending in **(TODO)** is not implemented. All currently documented operations are implemented.
 
 ### Cards
-- `list_cards` - List cards with optional filtering by deck
-- `get_card` - Retrieve a single card by ID
-- `create_card` - Create a new flashcard
-- `update_card` - Update an existing card
-- `delete_card` - Permanently delete a card
-- `add_attachment` - Upload file attachments to cards
-- `delete_attachment` - Remove attachments from cards
+
+#### Create a card
+
+- API: `POST /cards/`
+- MCP tool: `create_card`
+
+#### Retrieve a card
+
+- API: `GET /cards/:card-id`
+- MCP tool: `get_card`
+
+#### List cards
+
+- API: `GET /cards/`
+- MCP tool: `list_cards`
+
+#### Update a card
+
+- API: `POST /cards/:card-id`
+- MCP tool: `update_card`
+
+#### Delete a card
+
+- API: `DELETE /cards/:card-id`
+- MCP tool: `delete_card`
+
+#### Add an attachment
+
+- API: `POST /cards/:card-id/attachments/:file-name`
+- MCP tool: `add_attachment`
+
+#### Delete an attachment
+
+- API: `DELETE /cards/:card-id/attachments/:file-name`
+- MCP tool: `delete_attachment`
 
 ### Decks
-- `list_decks` - List all decks
-- `get_deck` - Retrieve a single deck by ID
-- `create_deck` - Create a new deck
-- `update_deck` - Update deck properties
-- `delete_deck` - Permanently delete a deck
+
+#### Create a deck
+
+- API: `POST /decks/`
+- MCP tool: `create_deck`
+
+#### Retrieve a deck
+
+- API: `GET /decks/:deck-id`
+- MCP tool: `get_deck`
+
+#### List all decks
+
+- API: `GET /decks/`
+- MCP tool: `list_decks`
+
+#### Update a deck
+
+- API: `POST /decks/:deck-id`
+- MCP tool: `update_deck`
+
+#### Delete a deck
+
+- API: `DELETE /decks/:deck-id`
+- MCP tool: `delete_deck`
 
 ### Templates
-- `list_templates` - List all templates
-- `get_template` - Retrieve a template by ID
-- `create_template` - Create a new card template
 
-### Due Cards
-- `get_due_cards` - Get cards due for review (spaced repetition)
+#### Create a template
+
+- API: `POST /templates/`
+- MCP tool: `create_template`
+
+#### Retrieve a template
+
+- API: `GET /templates/:id`
+- MCP tool: `get_template`
+
+#### List all templates
+
+- API: `GET /templates/`
+- MCP tool: `list_templates`
+
+### Due cards
+
+#### Get all due cards
+
+- API: `GET /due/`
+- API by deck: `GET /due/:deck-id`
+- MCP tool: `get_due_cards`
 
 ## Installation
 
