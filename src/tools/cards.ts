@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import { basename } from "node:path";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getMochiClient, MochiApiError } from "../client.ts";
@@ -194,17 +196,20 @@ export function registerCardTools(server: McpServer): void {
       try {
         const client = getMochiClient();
         const filePath = params["file-path"];
-        const file = Bun.file(filePath);
-
-        if (!(await file.exists())) {
-          return {
-            content: [{ type: "text", text: `Error: File not found: ${filePath}` }],
-            isError: true,
-          };
+        let blob: Blob;
+        try {
+          blob = new Blob([await readFile(filePath)]);
+        } catch (error) {
+          if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+            return {
+              content: [{ type: "text", text: `Error: File not found: ${filePath}` }],
+              isError: true,
+            };
+          }
+          throw error;
         }
 
-        const blob = await file.arrayBuffer().then((ab) => new Blob([ab]));
-        const filename = params.filename ?? filePath.split("/").pop() ?? "attachment";
+        const filename = params.filename ?? basename(filePath);
 
         const result = await client.addAttachment(params["card-id"], blob, filename);
         return {

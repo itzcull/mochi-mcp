@@ -1,13 +1,14 @@
 const BASE_URL = "https://app.mochi.cards/api";
 
 export class MochiApiError extends Error {
-  constructor(
-    public readonly statusCode: number,
-    public readonly errors: unknown,
-    message: string
-  ) {
+  readonly statusCode: number;
+  readonly errors: unknown;
+
+  constructor(statusCode: number, errors: unknown, message: string) {
     super(message);
     this.name = "MochiApiError";
+    this.statusCode = statusCode;
+    this.errors = errors;
   }
 }
 
