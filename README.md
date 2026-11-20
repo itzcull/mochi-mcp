@@ -2,6 +2,8 @@
 
 MCP server for the [Mochi Cards](https://mochi.cards) API. Enables AI assistants to manage flashcards, decks, and templates through the Model Context Protocol.
 
+See the [official Mochi API reference](https://mochi.cards/docs/api/).
+
 ## Features
 
 ### Cards
