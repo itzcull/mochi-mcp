@@ -97,11 +97,9 @@ The operations below follow the [official Mochi API reference](https://mochi.car
 - API by deck: `GET /due/:deck-id`
 - MCP tool: `get_due_cards`
 
-## Installation
+## Requirements
 
-```bash
-bun install
-```
+- Node.js 26 or later
 
 ## Configuration
 
@@ -121,8 +119,8 @@ Add this to your `claude_desktop_config.json`:
 {
   "mcpServers": {
     "mochi": {
-      "command": "bun",
-      "args": ["run", "/path/to/mochi-mcp/src/index.ts"],
+      "command": "npx",
+      "args": ["-y", "@itzcull/mochi-mcp"],
       "env": {
         "MOCHI_API_KEY": "your-api-key-here"
       }
@@ -131,16 +129,25 @@ Add this to your `claude_desktop_config.json`:
 }
 ```
 
-Replace `/path/to/mochi-mcp` with the actual path to this repository.
-
 ## Development
 
+This project uses Node.js 26 and npm, as set in `devEngines` in `package.json`. Node runs the TypeScript source directly, so development needs no build step.
+
 ```bash
-# Run with hot reload
-bun run dev
+# Install dependencies
+npm install
+
+# Run with restart on file changes
+MOCHI_API_KEY=your-api-key-here npm run dev
 
 # Run once
-bun run start
+MOCHI_API_KEY=your-api-key-here npm start
+
+# Type-check
+npm run typecheck
+
+# Compile to dist/, which is what the npm package ships
+npm run build
 ```
 
 ## License
